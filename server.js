@@ -19,3 +19,7 @@ app.get(`/api/type/:userType`, usersCtrl.getByType)
 
 
 app.put(`/api/user/:userId`, usersCtrl.updateUser)
+
+app.post('/api/user', usersCtrl.addUser)
+
+app.delete('/api/user/:userId', usersCtrl.deleteUser)

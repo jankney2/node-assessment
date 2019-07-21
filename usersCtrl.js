@@ -86,11 +86,44 @@ updateUser: (req, res)=> {
         return +el.id===+userId
     })
 
-    let newObj={...req.body, id}
+    let newObj={...req.body, id:userId}
 
     userData.splice(index, 1, req.body)
 res.status(200).send(userData)
-}
+}, 
+
+addUser: (req, res)=> {
+    let {first_name, last_name, email, gender, language, age, city, state, type, favorites }=req.body
+    let newId=userData[userData.length-1].id 
+
+    userData.push({
+        "id":++newId,
+        first_name, 
+        last_name, 
+        email, 
+        gender, 
+        language, 
+        age, 
+        city, 
+        state, 
+        type, 
+        favorites 
+    })
+
+
+    res.status(200).send(userData)
+
+}, 
+
+deleteUser:(req, res)=> {
+    let userId=req.params
+    let index=userData.findIndex(el=>{
+        return +el.id===+userId
+    })
+
+    userData.splice(index, 1)
+}, 
+
 
 
 }
