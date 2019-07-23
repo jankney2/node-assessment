@@ -1,4 +1,8 @@
 const userData = require("./userData.json");
+let counter=0
+userData.forEach(el=>{
+el.id=++counter
+})
 
 module.exports = {
   getUser: (req, res) => {
@@ -83,11 +87,13 @@ module.exports = {
   },
 
   addUser: (req, res) => {
-    let counter=1
-    userData.forEach(el=>{
-        el.id=counter++
+   console.log(req.body, 'req.body')
+   
+    // let counter=1
+    // userData.forEach(el=>{
+    //     el.id=counter++
 
-    })
+    // })
     
     let {
       first_name,
@@ -103,7 +109,7 @@ module.exports = {
     } = req.body;
 
     userData.push({
-      "id": counter++,
+      "id": ++counter,
       first_name,
       last_name,
       email,
@@ -116,7 +122,6 @@ module.exports = {
       favorites
     });
 
-    console.log(userData)
     res.status(200).send(userData);
   },
 
