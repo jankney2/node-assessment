@@ -1,129 +1,133 @@
-const userData= require('./userData.json')
+const userData = require("./userData.json");
 
-module.exports={
-getUser: (req, res)=>{
+module.exports = {
+  getUser: (req, res) => {
+    console.log("hit");
 
-if(!req.query){
-    res.status(200).send(userData)
-}
+    let { age, email, favorites: favs } = req.query;
 
-    let {age, email, favorites:favs}=req.query
+    let foundUsers = [];
 
-let foundUsers= []
+    if (favs) {
+      for (let i = 0; i < userData.length; i++) {
+        if (
+          userData[i].favorites.find(el => {
+            return el === favs;
+          })
+        )
+          foundUsers.push(userData[i]);
+      }
 
-if(favs){
-
-    for(let i=0;i<userData.length; i++){
-        if(userData[i].favorites.find(el=>{
-            return el===favs
-        }))
-        foundUsers.push(userData[i])
+      res.status(200).send(foundUsers);
     }
-    
-    
-    
-    res.status(200).send(foundUsers)
-}
-if(email){
+    if (email) {
+      let users = userData.filter(el => {
+        return el.email === email;
+      });
 
-let users=userData.filter(el=>{
-    return el.email===email
-})
-    
-    
-    res.status(200).send(users)
-}
-
-if(age){
-let users= userData.filter(el=>{
-    return el.age<age
-})
-
-res.status(200).send(users)
-}
-
-
-
-
-},
-getIndividual: (req, res)=>{
-    let {userId}=req.params
-
-    let user=userData.find(el=>{
-        return +el.id===+userId
-    })
-    if(user){
-
-        res.status(200).send(user)
+      res.status(200).send(users);
     }
-    res.sendStatus(404)
-}, 
 
-getAdmins: (req, res)=> {
-    let admins=userData.filter(el=>{
-        return el.type==='admin'
-    })
-    res.status(200).send(admins)
+    if (age) {
+      let users = userData.filter(el => {
+        return el.age < age;
+      });
 
-}, 
-getNonAdmins: (req, res)=> {
-    let nonAdmins=userData.filter(el=>{
-        return el.type!=='admin'
+      res.status(200).send(users);
+    } else {
+      res.status(200).send(userData);
+    }
+  },
+  getIndividual: (req, res) => {
+    let { userId } = req.params;
+
+    let user = userData.find(el => {
+      return +el.id === +userId;
+    });
+    if (user) {
+      res.status(200).send(user);
+    }
+    res.sendStatus(404);
+  },
+
+  getAdmins: (req, res) => {
+    let admins = userData.filter(el => {
+      return el.type === "admin";
+    });
+    res.status(200).send(admins);
+  },
+  getNonAdmins: (req, res) => {
+    let nonAdmins = userData.filter(el => {
+      return el.type !== "admin";
+    });
+    res.status(200).send(nonAdmins);
+  },
+  getByType: (req, res) => {
+    let users = userData.filter(el => {
+      return el.type === req.params.userType;
+    });
+
+    res.status(200).send(users);
+  },
+  updateUser: (req, res) => {
+    let { userId } = req.params;
+
+    let index = userData.findIndex(el => {
+      return +el.id === +userId;
+    });
+    console.log(index, "index put");
+    let newObj = { ...req.body, id: +userId };
+    console.log(newObj);
+    userData.splice(index, 1, newObj);
+    res.status(200).send(userData);
+  },
+
+  addUser: (req, res) => {
+    let counter=1
+    userData.forEach(el=>{
+        el.id=counter++
+
     })
-    res.status(200).send(nonAdmins)
-}, 
-getByType: (req, res)=> {
     
-    let users= userData.filter(el=>{
-        return el.type===req.params.userType
-    })
-
-    res.status(200).send(users)
-}, 
-updateUser: (req, res)=> {
-    let {userId}=req.params
-    let index= userData.findIndex(el=>{
-        return +el.id===+userId
-    })
-
-    let newObj={...req.body, id:userId}
-
-    userData.splice(index, 1, req.body)
-res.status(200).send(userData)
-}, 
-
-addUser: (req, res)=> {
-    let {first_name, last_name, email, gender, language, age, city, state, type, favorites }=req.body
-    let newId=userData[userData.length-1].id 
+    let {
+      first_name,
+      last_name,
+      email,
+      gender,
+      language,
+      age,
+      city,
+      state,
+      type,
+      favorites
+    } = req.body;
 
     userData.push({
-        "id":++newId,
-        first_name, 
-        last_name, 
-        email, 
-        gender, 
-        language, 
-        age, 
-        city, 
-        state, 
-        type, 
-        favorites 
-    })
+      "id": counter++,
+      first_name,
+      last_name,
+      email,
+      gender,
+      language,
+      age,
+      city,
+      state,
+      type,
+      favorites
+    });
 
+    console.log(userData)
+    res.status(200).send(userData);
+  },
 
-    res.status(200).send(userData)
+  deleteUser: (req, res) => {
+    let index = userData.findIndex(el => {
+      return +el.id === +req.params.userId;
+    });
 
-}, 
-
-deleteUser:(req, res)=> {
-    let userId=req.params
-    let index=userData.findIndex(el=>{
-        return +el.id===+userId
-    })
-
-    userData.splice(index, 1)
-}, 
-
-
-
-}
+    console.log(userData[index], "first");
+    userData.splice(index, 1);
+    console.log(userData.length, "second");
+    res.status(200).send(userData);
+  }
+};
